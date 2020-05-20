@@ -2,20 +2,18 @@
   <div class="wrapper">
     <div class="container" v-show="openCardShown">
       <div class="modal__header">
-        <input v-if="titleEdit==true" type="text" class="modal__title titleinput" v-model="titlePlaceholder" @blur="notes[id].title=titlePlaceholder;titleEdit = !titleEdit;titlePlaceholder=''"></input>
-        <div v-if="titleEdit==false" class="modal__title">{{notes[this.id].title}}<br><img src="../assets/edit.svg" class="titleEditBtn" @click="titleEdit = !titleEdit"></div>
+        <input v-if="titleEdit==true" type="text" class="modal__title titleinput" v-model="titlePlaceholder" @blur="grabbedNote.title=titlePlaceholder;titleEdit = !titleEdit;titlePlaceholder=''; changesMade = true;"/>
+        <div v-if="titleEdit==false" class="modal__title">{{grabbedNote.title}}<br><img src="../assets/edit.svg" class="titleEditBtn" @click="titleEdit = !titleEdit"></div>
         <img src="../assets/no-white.svg" class="closeModalBtn" @click="attemptCloseModal()">
       </div>
       <div class="modal__todos">
-        <div class="todounit" v-for="(todo, index) in grabbedNote.todos">
-          <input @focus="changesMade = true; cacheText();" @blur="pushCacheText()" type="text" class="text" v-model="todo.text">
-
-          </input>
+        <div class="todounit" v-for="(todo, index) in grabbedNote.todos" v-bind:key="todo.todo_id">
           <div class="status">
             <p class="true" v-if="grabbedNote.todos[index].done==true" @click="tickThisOne(index)"><img class="mark" src="../assets/checked.svg"></p>
             <p class="false" v-else @click="tickThisOne(index)"><img class="mark" src="../assets/unchecked.svg"></p>
           </div>
-          <p class="todoRemoveBtn" @click="removeTodo(index)">удалить задачу</p>
+          <input v-bind:class="{todoDone: todo.done}"@focus="changesMade = true; cacheText();" @blur="pushCacheText()" type="text" class="text" v-model="todo.text"/>
+          <img src="../assets/trash.svg" class="todoRemoveBtn" @click="removeTodo(index)">
         </div>
         <div class="todo__footer">
             <img src="../assets/undo.svg" class="todoBtn undoBtn" v-bind:class="{undoActive: undoable}" @click="undo()">
@@ -58,18 +56,19 @@ export default {
   name: 'App',
   data () {
     return {
-    id: this.$route.params.id,
-    grabbedNote: 0,
-    titleEdit: false,
-    changesMade: false,
-    openCardShown: true,
-    saveChangesPromptShown: false,
-    deleteTheNotePromptShown: false,
-    undoable: false,
-    redoable: false,
-    cache: [], // кэш для всех действий за этот сеанс
-    microCache: '', // используется в кэшировании текста todo для сохранения состояния на момент @focus и его кэширование на @blur
-    cacheInstancesBehind: 0, // количество кэшированных версий заметки позади
+      id: this.$route.params.id,
+      grabbedNote: 0,
+      titleEdit: false,
+      changesMade: false,
+      openCardShown: true,
+      saveChangesPromptShown: false,
+      deleteTheNotePromptShown: false,
+      undoable: false,
+      redoable: false,
+      titlePlaceholder: '',
+      cache: [], // кэш для всех действий за этот сеанс
+      microCache: '', // используется в кэшировании текста todo для сохранения состояния на момент @focus и его кэширование на @blur
+      cacheInstancesBehind: 0, // количество кэшированных версий заметки позади
     }
   },
   components: {
@@ -87,17 +86,17 @@ export default {
     addTodo: function() {
       this.cacheThis();
       this.grabbedNote.todos.push({todo_id: this.grabbedNote.todos.length, text: '', done: false});
-      this.changesMade=true;
+      this.changesMade = true;
     },
     removeTodo: function(index) {
       this.cacheThis();
       this.grabbedNote.todos.splice(index, 1);
-      this.changesMade=true;
+      this.changesMade = true;
     },
     tickThisOne: function(index) {
       this.cacheThis();
       this.grabbedNote.todos[index].done = !this.grabbedNote.todos[index].done;
-      this.changesMade=true;
+      this.changesMade = true;
     },
     attemptCloseModal: function() {
       if (this.changesMade){
@@ -108,7 +107,7 @@ export default {
     },
     closeModal: function() {
       this.cache = [];
-      window.location.href="/";
+      window.location.href = "/";
     },
     saveChangesPrompt: function() {
       this.openCardShown = false;
@@ -139,6 +138,7 @@ export default {
       this.microCache = JSON.stringify(this.grabbedNote);
     },
     pushCacheText: function() {
+      this.undoable = true;
       this.cache[this.cacheInstancesBehind] = this.microCache;
       this.cacheInstancesBehind++;
     },
@@ -146,7 +146,7 @@ export default {
       this.cache[this.cacheInstancesBehind] = JSON.stringify(this.grabbedNote);
       this.grabbedNote = JSON.parse(this.cache[this.cacheInstancesBehind-1]);
       this.cacheInstancesBehind--;
-      if (this.cacheInstancesBehind == 0){
+      if (this.cacheInstancesBehind === 0){
         this.undoable = false;
       }
       this.redoable = true;
@@ -155,7 +155,7 @@ export default {
       this.undoable = true;
       this.grabbedNote = JSON.parse(this.cache[this.cacheInstancesBehind+1]);
       this.cacheInstancesBehind++;
-      if((this.cache.length-1)==(this.cacheInstancesBehind)){
+      if ((this.cache.length-1) === (this.cacheInstancesBehind)) {
         this.redoable = false;
       }
     }
@@ -175,7 +175,6 @@ export default {
 .container {
   margin-top: 16px;
   border-radius: 16px;
-
   width: auto;
   height: auto;
   display: flex;
@@ -183,6 +182,7 @@ export default {
   justify-content: flex-start;
   align-items: center;
   background-color: white;
+  width: 35%;
 }
 
 .modal__header {
@@ -228,14 +228,15 @@ export default {
 }
 
 .modal__todos {
-  margin-top: 10%;
+  margin-top: 0;
   font-size: 32px;
   padding: 16px;
-  padding-bottom: 0;
+  width: 80%;
 }
 
 .todounit {
-  padding-left: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
   margin-top: 8px;
   display: flex;
   flex-direction: row;
@@ -256,9 +257,10 @@ export default {
 }
 
 .text {
-  border: 1px solid gray;
+  border: 0;
   padding: 1%;
   font-size: 16px;
+  width: 100%;
   border-radius: 4px;
   transition: 0.2s;
 }
@@ -268,13 +270,21 @@ export default {
   box-shadow: 2px 2px 2px rgba(0, 60, 120, 0.5);
 }
 
+.todoDone {
+  text-decoration: line-through;
+}
+
 .status {
   height: auto;
 }
 
+.true, .false {
+  padding: 0; margin: 0;
+}
+
 .mark {
   padding-top: 6px;
-  margin-left: 16px;
+  margin-right: 6px;
   width: 24px;
   cursor: pointer;
 }
@@ -284,11 +294,9 @@ export default {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  text-align: center;
-  font-size: 12px;
-  font-style: italic;
+  width: 32px;
+  margin-left: 6px;
   cursor: pointer;
-  color: red;
   opacity: 0.7;
   transition: 0.1s;
 }
@@ -303,6 +311,7 @@ export default {
   flex-direction: row;
   justify-content: flex-end;
   padding: 8px;
+  padding-top: 16px;
   padding-right: 0;
 }
 
@@ -399,5 +408,11 @@ export default {
   padding: 8px;
   width: 24px;
   cursor: pointer;
+}
+
+@media screen and (max-width: 1080px) {
+  .container {
+    width: 95%;
+  }
 }
 </style>

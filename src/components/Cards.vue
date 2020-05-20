@@ -1,13 +1,13 @@
 <template>
   <div class="wrapper">
     <div class="row showcase" v-show="cardsShown">
-      <div class="card" v-for="(note, index) in notes">
+      <div class="card" v-for="(note, index) in notes" v-bind:key="note.id">
         <div class="card__header">
           <div class="title">{{note.title}}</div>
           <img src="../assets/trash-white.svg" class="deleteBtn" @click="deleteTheNote(index)">
         </div>
         <div class="todos" @click="openTheCard(index)">
-          <div v-for="todo in note.todos" class="todo">
+          <div class="todo" v-for="todo in note.todos" v-bind:key="todo.todo_id">
             <div class="status">
               <p class="true" v-if="todo.done==true"><img class="mark" src="../assets/yes.svg"></p>
               <p class="false" v-else><img class="mark" src="../assets/no.svg"></p>
@@ -54,7 +54,7 @@ export default {
   },
   methods: {
     openTheCard: function(index) {
-      window.location.href="/note/" + index;
+      window.location.href = `/note/${index}`;
     },
     deleteTheNote: function(index) {
       this.grabbedId = index;
@@ -134,7 +134,7 @@ export default {
   flex-direction: column;
   height: auto;
   cursor: pointer;
-  padding-bottom: 32px;
+  padding-bottom: 12px;
 }
 
 .todo {
@@ -209,12 +209,13 @@ export default {
   right: 5%;
   bottom: 5%;
   cursor: pointer;
+  opacity: 0.7;
   transition: 0.3s;
 }
 
 .newNoteBtn:hover {
   transition: 0.3s;
-  transform: rotateZ(45deg);
+  opacity: 1;
 }
 
 @media screen and (max-width: 1080px) {

@@ -8,7 +8,7 @@
 
 <script>
 import Pgheader from './components/Pgheader.vue'
-import mockedData from './utils/mockData.json'
+import mockedData from './fixtures/mockData.json'
 import { bus } from './main'
 
 export default {
@@ -30,11 +30,13 @@ export default {
   },
   methods: {
     pickLocalStorageData: function() {
-      if(window.localStorage.getItem('notes')==null)
+      const lsNotes = window.localStorage.getItem('notes');
+      if(!lsNotes)
       {
         window.localStorage.setItem('notes', JSON.stringify(this.defaultCards));
+        return this.defaultCards;
       }
-      return JSON.parse(window.localStorage.getItem('notes'));
+      return JSON.parse(lsNotes);
     },
     newNote() {
       this.notes.push({id: this.notes.length, title: 'New note', todos: [{todo_id: 0, text: 'New todo', done: 'false'}]});
