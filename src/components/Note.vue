@@ -71,9 +71,6 @@ export default {
       cacheInstancesBehind: 0, // количество кэшированных версий заметки позади
     }
   },
-  components: {
-
-  },
   created () {
     const currentNote = this.notes.find(({ id }) => id === Number(this.id));
     if (!currentNote) {

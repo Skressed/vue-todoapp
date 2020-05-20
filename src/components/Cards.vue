@@ -37,9 +37,6 @@ import { bus } from '../main'
 
 export default {
   name: 'App',
-  components: {
-
-  },
   data () {
     return {
       cardsShown: true,
