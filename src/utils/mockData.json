@@ -1,0 +1,50 @@
+[
+        {
+          "id": 0,
+          "title": "get groceries",
+          "todos": [
+            {
+              "todo_id": 0,
+              "text": "get vegetables",
+              "done": false
+            },
+            {
+              "todo_id": 1,
+              "text": "get fruits",
+              "done": true
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "title": "fix bugs",
+          "todos": [
+            {
+              "todo_id": 0,
+              "text": "fix the weird bug",
+              "done": false
+            },
+            {
+              "todo_id": 1,
+              "text": "fix the stupid bug",
+              "done": true
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "title": "feed the animals",
+          "todos": [
+            {
+              "todo_id": 0,
+              "text": "feed the dog",
+              "done": false
+            },
+            {
+              "todo_id": 1,
+              "text": "feed the cat",
+              "done": true
+            }
+          ]
+        }
+]
