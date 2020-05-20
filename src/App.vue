@@ -31,8 +31,7 @@ export default {
   methods: {
     pickLocalStorageData: function() {
       const lsNotes = window.localStorage.getItem('notes');
-      if(!lsNotes)
-      {
+      if (!lsNotes) {
         window.localStorage.setItem('notes', JSON.stringify(this.defaultCards));
         return this.defaultCards;
       }

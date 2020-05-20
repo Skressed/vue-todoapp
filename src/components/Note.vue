@@ -104,7 +104,7 @@ export default {
       this.changesMade = true;
     },
     attemptCloseModal: function() {
-      if (this.changesMade){
+      if (this.changesMade) {
         this.saveChangesPrompt();
         return
       }
