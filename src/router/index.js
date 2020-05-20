@@ -16,6 +16,11 @@ export default new Router({
       name: 'Note',
       component: Note
    },
+   {
+      path: '*',
+      name: 'Cards',
+      component: Cards
+   },
  ],
  mode: 'history',
 })
