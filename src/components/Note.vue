@@ -75,7 +75,12 @@ export default {
 
   },
   created () {
-    this.grabbedNote = this.notes[this.id];
+    const currentNote = this.notes.find(({ id }) => id === Number(this.id));
+    if (!currentNote) {
+      window.location.href = "/";
+      return;
+    }
+    this.grabbedNote = currentNote;
   },
   props: {
     notes: {
